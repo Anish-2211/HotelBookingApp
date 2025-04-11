@@ -1,6 +1,8 @@
 import dbConfig from "@/lib/db.config";
 import User from "@/models/user.model";
 import { NextResponse } from "next/server";
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 export async function POST(req: any) {
   try {
@@ -17,4 +19,5 @@ export async function POST(req: any) {
       { status: 500 }
     );
   }
-}
+};
+
