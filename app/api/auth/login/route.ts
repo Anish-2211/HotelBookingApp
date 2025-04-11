@@ -1,51 +1,65 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import bcrypt from 'bcrypt';
-const jwt = require('jsonwebtoken')
-import User from '@/models/user.model';
-import dbConfig from '@/lib/db.config';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
+import User from "@/models/user.model";
+import dbConfig from "@/lib/db.config";
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return NextResponse.json({ message: 'Missing credentials' }, { status: 400 });
+      return NextResponse.json(
+        { message: "Missing credentials" },
+        { status: 400 }
+      );
     }
 
-    await dbConfig()
+    await dbConfig();
 
     const user = await User.findOne({ email });
 
     if (!user) {
-        return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
     }
-    
+
+    console.log("user.password : ", user.password, password);
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log(isMatch);
     if (!isMatch) {
-        // console.log("hello")
-      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+      // console.log("hello")
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
-    cookies().set('token', token, {
+    cookies().set("token", token, {
       httpOnly: true,
-      path: '/',
+      path: "/",
       maxAge: 60 * 60 * 24 * 7,
-    //   secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      //   secure: process.env.NODE_ENV === 'production',
+      sameSite: "lax",
     });
 
-    return NextResponse.json({ message: 'Login successful' }, { status: 200 });
+    return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
-    console.error('[LOGIN_ERROR]', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    console.error("[LOGIN_ERROR]", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
