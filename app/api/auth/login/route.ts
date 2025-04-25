@@ -29,24 +29,23 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("user.password : ", user.password, password);
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log(isMatch);
     if (!isMatch) {
-      // console.log("hello")
       return NextResponse.json(
         { message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    const token = jwt.sign(
+    const SECRET = process.env.JWT_SECRET_KEY || "";
+
+    const token = await jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET_KEY,
+      SECRET,
       { expiresIn: "7d" }
     );
 
-    cookies().set("token", token, {
+    (await cookies()).set("token", token, {
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
@@ -56,7 +55,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
-    console.error("[LOGIN_ERROR]", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
