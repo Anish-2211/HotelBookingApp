@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
 
-interface IHotel {
+export interface IHotel {
   hotel_name: string;
   hotel_full_address?: { type: String };
   hotel_contactNo: number;
@@ -9,7 +9,7 @@ interface IHotel {
   location: string;
   amenties?: Types.ObjectId;
   hotel_image?: string;
-  rooms?: Types.ObjectId;
+  rooms?: Types.ObjectId[];
 }
 
 const hotelSchema = new mongoose.Schema<IHotel>(

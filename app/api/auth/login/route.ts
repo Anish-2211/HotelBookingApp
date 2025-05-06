@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 
 import User from "@/models/user.model";
 import dbConfig from "@/lib/db.config";
+import { JwtUserPayload } from "@/types/user";
 
 export async function POST(req: Request) {
   try {
@@ -39,11 +40,8 @@ export async function POST(req: Request) {
 
     const SECRET = process.env.JWT_SECRET_KEY || "";
 
-    const token = await jwt.sign(
-      { userId: user._id, email: user.email },
-      SECRET,
-      { expiresIn: "7d" }
-    );
+    const payload: JwtUserPayload = { userId: user._id, email: user.email };
+    const token = await jwt.sign(payload, SECRET, { expiresIn: "7d" });
 
     (await cookies()).set("token", token, {
       httpOnly: true,

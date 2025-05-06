@@ -1,6 +1,6 @@
 // import { timeStamp } from "console";
 // import { unique } from "next/dist/build/utils";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 
 interface IUser {
@@ -8,6 +8,7 @@ interface IUser {
   age?: number;
   email: string;
   password: string;
+  bookings?: Types.ObjectId[];
 }
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -27,6 +28,12 @@ const userSchema = new mongoose.Schema<IUser>(
       required: true,
       //   select: false, // hide password in response
     },
+    bookings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Booking",
+      },
+    ],
   },
   {
     timestamps: true,

@@ -19,7 +19,7 @@ enum bedType {
 interface IRoom {
   room_number: number;
   hotel: Types.ObjectId;
-  amenity: Types.ObjectId;
+  amenity?: Types.ObjectId[];
   room_facing: roomFacing;
   description?: string;
   room_capacity: number;
@@ -29,7 +29,7 @@ interface IRoom {
   isSmoking?: boolean;
 }
 
-const hotelSchema = new mongoose.Schema<IRoom>(
+const roomSchema = new mongoose.Schema<IRoom>(
   {
     room_number: {
       type: Number,
@@ -63,5 +63,5 @@ const hotelSchema = new mongoose.Schema<IRoom>(
   { timestamps: true }
 );
 
-const Hotel = mongoose.models.Hotel || mongoose.model("Hotel", hotelSchema);
-export default Hotel;
+const Room = mongoose.models.Room || mongoose.model("Room", roomSchema);
+export default Room;
